@@ -29,7 +29,7 @@ router.get("/burgers", function(req, res) {
 });
 
 router.post("/", function(req, res) {
-  var newBurger = req.body.burgerName;
+  var newBurger = req.body.burger_name;
   console.log("Burger added!");
   db.Burger.create({
     burger_name: newBurger
@@ -40,7 +40,7 @@ router.post("/", function(req, res) {
 
 
 router.put("/:eatBurger", function(req, res) {
-var burgerToEat = req.params.burgerName;
+var burgerToEat = req.params.burger_name;
   db.Burger.update({
     devoured: true
   },
