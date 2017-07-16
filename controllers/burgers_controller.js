@@ -1,7 +1,8 @@
 var express = require("express");
-
+var methodOverride = require('method-override');
+var db = require('./../models');
 var router = express.Router();
-var burger = require("../models/burger");
+
 
 // get route -> index
 router.get("/", function(req, res) {
