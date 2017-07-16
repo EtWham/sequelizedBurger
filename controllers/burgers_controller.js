@@ -9,33 +9,47 @@ router.get("/", function(req, res) {
 });
 
 router.get("/burgers", function(req, res) {
-  // express callback response by calling burger.selectAllBurger
-  burger.all(function(data) {
-    // Wrapping the array of returned burgers in a object so it can be referenced inside our handlebars
-    var hbsObject = { burgers: data };
-    res.render("index", hbsObject);
-  });
+  var burgers = [];
+  var devouredBurgers = [];
+  db.Burger.findAll({}).then(function(data){
+    for(var i = 0; i < data.length; i++){
+      if(data[i].dataValues.devoured === false){
+        burgers.push(data[i].dataValues);
+      }
+      else{
+        devouredBurgers.push(data[i].dataValues);
+      }
+    }
+    res.render('index', {
+      burgers: burgers,
+      eatenBurgers: devouredBurgers
+    });
+  })
 });
 
-// post route -> back to index
-router.post("/burgers/create", function(req, res) {
-  // takes the request object using it as input for buger.addBurger
-  burger.create(req.body.burger_name, function(result) {
-    // wrapper for orm.js that using MySQL insert callback will return a log to console,
-    // render back to index with handle
-    console.log(result);
-    res.redirect("/");
-  });
+router.post("/", function(req, res) {
+  var newBurger = req.body.burgerName;
+  console.log("Burger added!");
+  db.Burger.create({
+    burger_name: newBurger
+  }).then(function(data){
+    res.redirect('/');
+  })
 });
 
-// put route -> back to index
-router.put("/burgers/update", function(req, res) {
-  burger.update(req.body.burger_id, function(result) {
-    // wrapper for orm.js that using MySQL update callback will return a log to console,
-    // render back to index with handle
-    console.log(result);
-    res.redirect("/");
-  });
+
+router.put("/:eatBurger", function(req, res) {
+var burgerToEat = req.params.burgerName;
+  db.Burger.update({
+    devoured: true
+  },
+  {
+    where: {
+      burger_name: burgerToEat
+    }
+  }).then(function(data){
+    res.redirect('/');
+  })
 });
 
 module.exports = router;
